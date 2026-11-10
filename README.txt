@@ -1,0 +1,1 @@
+Muse v7: GitHub repository muse-app のルートにファイルをアップロードして上書きします。index.html, manifest.webmanifest, sw.js, icon-192.png, icon-512.png。AI会話と3Dは未実装。

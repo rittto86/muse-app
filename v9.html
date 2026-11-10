@@ -1,0 +1,88 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Muse v9 — 3D表示修正版</title><style>
+*{box-sizing:border-box}body{margin:0;background:#0c0a13;color:#f9f3ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}.app{max-width:720px;margin:auto;height:100vh;height:100dvh;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 15%,#30243e,#110e19 55%,#0c0a13)}header{padding:calc(15px + env(safe-area-inset-top)) 18px 9px;display:flex;justify-content:space-between;align-items:center}header b{font-size:22px}header span{color:#bca6ce;font-size:12px}button{font:inherit;color:#f9f3ff;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#settings{background:#352a45;border:1px solid #6d557f;border-radius:14px;padding:9px 13px}.stage{height:235px;flex-shrink:0;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative}.glow{position:absolute;width:180px;height:140px;background:#af8ad7;filter:blur(60px);opacity:.3}.floater{position:relative;animation:float 3.5s ease-in-out infinite}.muse{position:relative;width:143px;height:151px;border-radius:49% 49% 35% 35% / 45% 45% 22% 22%;background:radial-gradient(ellipse at 28% 15%,#fff,#faf7ff 32%,#e8dcf5 72%,#c5b0df);box-shadow:inset -12px -8px 20px #a78dc344,0 14px 26px #0007}.muse:after{content:"";position:absolute;bottom:-5px;left:0;width:100%;height:23px;background:#d8c7eb;clip-path:polygon(0 0,100% 0,100% 63%,83% 95%,65% 69%,48% 100%,29% 70%,12% 95%,0 65%);border-radius:30%}.arm{position:absolute;top:83px;width:42px;height:50px;background:linear-gradient(135deg,#fff,#d3c0e8);border-radius:60%;z-index:-1}.arm.l{left:-25px;transform:rotate(32deg)}.arm.r{right:-25px;transform:rotate(-32deg)}.eye{position:absolute;top:69px;width:13px;height:18px;background:#1a1321;border-radius:50%;animation:blink 6s infinite}.eye:after{content:"";position:absolute;top:3px;left:3px;width:4px;height:5px;border-radius:50%;background:white}.eye.l{left:43px}.eye.r{right:43px}.cheek{position:absolute;top:92px;width:23px;height:12px;border-radius:50%;background:#eaa5c6a6;filter:blur(5px)}.cheek.l{left:19px}.cheek.r{right:19px}.mouth{position:absolute;top:96px;left:66px;width:12px;height:8px;border-bottom:3px solid #58445e;border-radius:50%}.muse.wave .arm.r{animation:wave .35s ease-in-out 6 alternate}.muse.happy{animation:happy .45s ease-in-out 4}.muse.sleep .eye{height:3px;top:77px;animation:none}.muse.talk .mouth{background:#493447;border:0;border-radius:50%;height:12px;animation:talk .3s infinite alternate}.status{font-size:13px;color:#d8c5e8;margin-top:20px;z-index:1}.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:0 10px 13px}.actions button{background:#32283e;border:1px solid #6d567c;border-radius:22px;padding:10px 13px;font-size:13px}.actions button:active,#settings:active,#send:active{background:#71518d}.chat{flex:1;min-height:0;overflow-y:auto;border-top:1px solid #ffffff16;padding:13px 14px;display:flex;flex-direction:column;gap:10px}.bubble{max-width:86%;border-radius:18px;padding:11px 14px;line-height:1.5;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.m{align-self:flex-start;background:#30263c}.bubble.u{align-self:flex-end;background:#644d7d}.composer{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#15101e;border-top:1px solid #ffffff16}input{flex:1;min-width:0;border-radius:24px;background:#2b2334;border:1px solid #665271;color:white;padding:12px 14px;font-size:16px}#send{border:0;border-radius:50%;background:#a88acb;color:#180f22;width:46px;font-size:23px}.sheet{display:none;position:fixed;inset:0;background:#000b;z-index:5;align-items:center;justify-content:center;padding:18px}.sheet.open{display:flex}.panel{background:#241b2f;border:1px solid #765e87;border-radius:20px;padding:20px;width:min(100%,390px)}.panel h2{margin:0 0 10px;font-size:19px}.panel p{font-size:13px;line-height:1.6;color:#d5c6e2}.panel button{background:#473553;border:1px solid #765e87;border-radius:12px;padding:10px;margin:4px 5px 4px 0}@keyframes float{50%{transform:translateY(-11px)}}@keyframes blink{0%,43%,46%,100%{transform:scaleY(1)}44%,45%{transform:scaleY(.1)}}@keyframes wave{to{transform:rotate(-60deg)}}@keyframes happy{50%{transform:translateY(-16px) scale(1.04)}}@keyframes talk{to{height:5px}}@media(max-height:680px){.stage{height:190px}.muse{transform:scale(.83)}.status{margin-top:2px}}@media(prefers-reduced-motion:reduce){.floater,.eye{animation:none}}
+
+/* v7: lightweight, iPhone-friendly soft fur illusion and individual facial animation */
+.muse{isolation:isolate;filter:drop-shadow(0 0 12px #dfc5ff50)}
+.muse:before{content:"";position:absolute;inset:-6px;border-radius:49% 49% 35% 35% / 45% 45% 22% 22%;z-index:-1;pointer-events:none;background:repeating-conic-gradient(from 4deg at 50% 50%,#fff9 0deg 2deg,#dac9f48a 3deg 5deg,#fff7 6deg 8deg);filter:blur(4px);opacity:.75}
+.eye{transform-origin:center center;transition:margin-left .35s ease,margin-top .35s ease}
+.muse.look-left .eye{margin-left:-4px}.muse.look-right .eye{margin-left:4px}
+.muse.blink-now .eye{animation:none;transform:scaleY(.12)}
+.muse.wave .arm.r{transform-origin:10% 15%}
+.muse.sleep .mouth{width:9px;height:9px;border:2px solid #735b78;border-radius:50%;border-top:0}
+.muse.happy .mouth{width:16px;left:64px;height:11px;border-bottom-width:4px}
+.muse.talk .cheek{opacity:.95}
+@media(max-width:380px){.actions{gap:5px}.actions button{padding:9px 10px;font-size:12px}}
+
+#three-stage{display:none;position:absolute;inset:0;z-index:2;touch-action:pan-y}#three-stage canvas{width:100%;height:100%;display:block}.stage.is3d .floater,.stage.is3d .glow{display:none}.stage.is3d #three-stage{display:block}.stage.is3d .status{position:absolute;bottom:3px;margin:0;z-index:3}#switch3d{background:#59436f;border:1px solid #ab8bcc;border-radius:18px;padding:9px 13px;font-size:13px}#three-note{font-size:11px;color:#cab6d9;text-align:center;padding:0 10px 5px}
+</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#0c0a13"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="./icon-192.png"></head><body><main class="app"><header><div><b>Muse</b> <span>3D表示修正版 v9</span></div><button id="settings" type="button">設定 ⚙</button></header><section class="stage" id="stage"><div id="three-stage" aria-label="Museの3Dモデル"></div><div class="glow"></div><div class="floater"><div class="muse" id="muse"><div class="arm l"></div><div class="arm r"></div><div class="eye l"></div><div class="eye r"></div><div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div></div><div class="status" id="status" aria-live="polite">Museはここにいるよ ✨</div></section><div class="actions"><button id="switch3d" type="button">☁️ 3Dを表示</button><button type="button" data-mode="wave">👋 手を振る</button><button type="button" data-mode="happy">✨ 喜ぶ</button><button type="button" data-mode="sleep">💤 眠る</button><button type="button" data-mode="talk">💬 おしゃべり</button><button type="button" data-mode="look">👀 キョロキョロ</button></div><div id="three-note">3Dが表示されない場合も、2Dモードで使えるよ。</div><section class="chat" id="chat" aria-label="チャット履歴"></section><form class="composer" id="form"><input id="input" placeholder="Museに話しかけてね…" aria-label="メッセージ" autocomplete="off"><button id="send" type="submit" aria-label="送信">➤</button></form></main><div class="sheet" id="sheet"><div class="panel"><h2>⚙ Muse 設定</h2><p>これは3D表示を試せる試作版です。AIとの会話・3Dモデルはまだ接続していません。履歴は端末のブラウザ内に保存を試みます。</p><button type="button" id="export">履歴をコピー</button><button type="button" id="clear">履歴を消去</button><button type="button" id="close">閉じる</button></div></div><script>
+(function(){'use strict';var muse=document.getElementById('muse'),status=document.getElementById('status'),chat=document.getElementById('chat'),input=document.getElementById('input'),sheet=document.getElementById('sheet'),key='muse_v6_history',history=[],timer=null;function setMode(m){clearTimeout(timer);muse.className='muse '+m;var messages={wave:'やっほー！ 👋',happy:'うれしいな！ ✨',sleep:'すやすや… 💤',talk:'おしゃべり中… 💬',look:'きょろきょろ… 👀'};status.textContent=messages[m]||'Museはここにいるよ ✨';if(m==='look'){muse.className='muse look-left';setTimeout(function(){muse.className='muse look-right'},650);setTimeout(function(){muse.className='muse look-left'},1300)}if(m!=='sleep')timer=setTimeout(function(){muse.className='muse';status.textContent='Museはここにいるよ ✨'},2200)}function bubble(t,who){var el=document.createElement('div');el.className='bubble '+who;el.textContent=t;chat.appendChild(el);chat.scrollTop=chat.scrollHeight}function save(){try{localStorage.setItem(key,JSON.stringify(history.slice(-100)))}catch(e){}}function add(t,who){history.push({text:t,who:who});bubble(t,who);save()}try{var h=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(h))history=h.filter(function(x){return x&&typeof x.text==='string'&&(x.who==='u'||x.who==='m')}).slice(-100)}catch(e){}if(history.length){history.forEach(function(x){bubble(x.text,x.who)})}else add('こんにちは！Museだよ ☁️\n下のボタンを押して、動きを試してみてね。','m');document.querySelectorAll('[data-mode]').forEach(function(b){b.addEventListener('click',function(){setMode(b.getAttribute('data-mode'))})});function reply(t){if(/おやすみ|眠い/.test(t)){setMode('sleep');return 'おやすみ。ゆっくり休んでね 🌙'}if(/ありがとう/.test(t)){setMode('happy');return 'こちらこそありがとう！ 💜'}if(/こんにちは|おはよう|こんばんは|やっほ/.test(t)){setMode('wave');return 'やっほー！今日も会えてうれしいな ☁️'}return 'メッセージを受け取ったよ ☁️\n今は操作確認用のデモ返信だよ。'}document.getElementById('form').addEventListener('submit',function(e){e.preventDefault();var t=input.value.trim();if(!t)return;add(t,'u');input.value='';setMode('talk');setTimeout(function(){add(reply(t),'m')},400)});document.getElementById('settings').addEventListener('click',function(){sheet.classList.add('open')});document.getElementById('close').addEventListener('click',function(){sheet.classList.remove('open')});sheet.addEventListener('click',function(e){if(e.target===sheet)sheet.classList.remove('open')});document.getElementById('clear').addEventListener('click',function(){if(!confirm('履歴を消去しますか？'))return;history=[];chat.textContent='';add('またお話ししようね ☁️','m');sheet.classList.remove('open')});document.getElementById('export').addEventListener('click',function(){var txt=history.map(function(x){return (x.who==='u'?'あなた: ':'Muse: ')+x.text}).join('\n\n');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){status.textContent='履歴をコピーしたよ！'},function(){window.prompt('履歴をコピーしてね',txt)})}else window.prompt('履歴をコピーしてね',txt)});})();
+</script><script>if ("serviceWorker" in navigator && location.protocol === "https:") { window.addEventListener("load", function(){navigator.serviceWorker.register("./sw.js").catch(function(){});}); }</script><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script><script type="module">
+const button=document.getElementById('switch3d');
+const stage=document.getElementById('stage');
+const mount=document.getElementById('three-stage');
+const note=document.getElementById('three-note');
+let active=false,ready=false,renderer,scene,camera,group,model,frame=0,mode='idle',lastMode='';
+const setNote=t=>{note.textContent=t};
+async function initialize(){
+  if(ready)return;
+  setNote('3Dモデルを読み込み中…');
+  const THREE=await import('three');
+  const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(33,1,0.1,100);camera.position.set(0,0.05,4.9);camera.lookAt(0,0.05,0);
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  mount.appendChild(renderer.domElement);
+  scene.add(new THREE.HemisphereLight(0xffffff,0xb4a0cf,2.5));
+  const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(-3,5,6);scene.add(light);
+  group=new THREE.Group();scene.add(group);
+  const gltf=await new GLTFLoader().loadAsync('./muse_reference_v4.glb');
+  model=gltf.scene;
+  // Original GLB uses Z-up coordinates; rotate to Three.js Y-up.
+  model.rotation.x=-Math.PI/2;
+  model.traverse(obj=>{
+    if(!obj.isMesh)return;
+    if(!obj.material || (obj.material.color && obj.material.color.getHex()===0xaaaaaa)){
+      obj.material=new THREE.MeshStandardMaterial({color:0xf3eafa,roughness:0.98,metalness:0,side:THREE.DoubleSide});
+    }
+  });
+  group.add(model);
+  const box=new THREE.Box3().setFromObject(model);const center=box.getCenter(new THREE.Vector3());
+  model.position.sub(center);model.position.y+=0.05;
+  // Center the whole rotated model and fit it in the narrow iPhone stage.
+  const size=box.getSize(new THREE.Vector3());
+  const scale=1.75/Math.max(size.x,size.y,size.z);
+  model.scale.setScalar(scale);
+  model.position.copy(center).multiplyScalar(-scale);
+  model.position.y+=0.08;
+  ready=true;resize();setNote('v9：正面・色を修正した3D表示テストだよ。');
+  const clock=new THREE.Clock();
+  function animate(){requestAnimationFrame(animate);if(!active)return;
+    const t=clock.getElapsedTime();
+    const css=document.getElementById('muse').className;
+    mode=css.includes('wave')?'wave':css.includes('happy')?'happy':css.includes('sleep')?'sleep':css.includes('talk')?'talk':css.includes('look-')?'look':'idle';
+    if(mode!==lastMode){frame=t;lastMode=mode}
+    const u=t-frame;
+    group.position.y=Math.sin(t*1.8)*.065;
+    group.rotation.y=Math.sin(t*.8)*.12;
+    group.rotation.z=0;
+    if(mode==='wave'){group.rotation.z=Math.sin(u*13)*.14;group.rotation.y=Math.sin(u*10)*.23}
+    if(mode==='happy'){group.position.y+=Math.abs(Math.sin(u*9))*.35}
+    if(mode==='sleep'){group.rotation.z=.14;group.position.y=Math.sin(t*.8)*.025}
+    if(mode==='talk'){group.rotation.z=Math.sin(t*10)*.045}
+    if(mode==='look'){group.rotation.y=Math.sin(t*3)*.38}
+    renderer.render(scene,camera);
+  }
+  animate();
+}
+function resize(){if(!renderer)return;const w=mount.clientWidth,h=mount.clientHeight;camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix();renderer.setSize(w,h,false);renderer.render(scene,camera)}
+button.addEventListener('click',async()=>{
+  if(active){active=false;stage.classList.remove('is3d');button.textContent='☁️ 3Dを表示';setNote('2Dモードに戻したよ。');return}
+  button.disabled=true;
+  try{await initialize();active=true;stage.classList.add('is3d');resize();button.textContent='↩️ 2Dに戻す';setNote('v9：正面・色を修正した3D表示テストだよ。')}
+  catch(e){console.error(e);active=false;stage.classList.remove('is3d');setNote('3Dを読み込めなかったよ。通信環境を確認してね。2Dはそのまま使えるよ。')}
+  finally{button.disabled=false}
+});
+window.addEventListener('resize',resize);
+</script></body></html>

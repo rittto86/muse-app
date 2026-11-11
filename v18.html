@@ -1,0 +1,57 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Muse v18 — 3D test</title><style>*{box-sizing:border-box}body{margin:0;background:#100d1b;color:#f8f3ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}header{padding:22px 18px 10px;display:flex;align-items:center;justify-content:space-between}header strong{font-size:24px}header small{font-size:12px;color:#c5b4da}.pill,button{background:#30223e;border:1px solid #806392;border-radius:25px;color:white;padding:11px 15px;font-size:14px;touch-action:manipulation}#stage{height:min(410px,52dvh);min-height:310px;position:relative;background:radial-gradient(ellipse at center,#35203d 0%,#100d1b 70%)}canvas{width:100%;height:100%;display:block}#status{position:absolute;bottom:0;width:100%;text-align:center;color:#dfcdea;font-size:13px;display:none}#fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:90px}.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px 10px 16px}.actions button:active{background:#72518b}.note{text-align:center;color:#a997bc;font-size:12px;padding:0 15px 14px}.chat{border-top:1px solid #34263f;padding:18px;min-height:190px}.bubble{display:inline-block;background:#30233d;border-radius:20px;padding:15px;line-height:1.6;max-width:90%}.entry{position:fixed;bottom:0;left:0;right:0;background:#1d1529;padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px}.entry input{flex:1;min-width:0;border:1px solid #856494;border-radius:28px;background:#30243b;color:white;font-size:16px;padding:12px}.entry button{background:#ae86ce;color:#160d1c;font-weight:bold}main{padding-bottom:100px}</style></head><body><header><div><strong>Muse</strong> <small>3Dテスト v18</small></div><button id="reset" class="pill">↻ 正面に戻す</button></header><main><div id="stage"><div id="fallback">☁️</div><div id="status">3Dモデルを読み込み中…</div></div><div class="actions"><button data-act="wave">👋 手を振る</button><button data-act="happy">✨ 喜ぶ</button><button data-act="sleep">💤 眠る</button><button data-act="talk">💬 おしゃべり</button><button data-act="look">👀 キョロキョロ</button></div><div class="note">v18：ふっくらした輪郭・短い産毛・自然な裾を調整。指で回転できます。</div><section class="chat" id="chat"><div class="bubble">こんにちは！Museだよ ☁️<br>毛並みを少し改良したよ！</div></section></main><form class="entry" id="form"><input id="message" placeholder="Museに話しかけてね…" autocomplete="off"><button type="submit">➤</button></form><script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+const stage=document.getElementById('stage'), status=document.getElementById('status');let renderer;
+try {const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(34,1,.1,100);camera.position.set(0,0,8.3);renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;stage.prepend(renderer.domElement);const root=new THREE.Group();scene.add(root);const bodyGroup=new THREE.Group();root.add(bodyGroup);
+scene.add(new THREE.HemisphereLight(0xffffff,0xb3a0d9,2.3));const light=new THREE.DirectionalLight(0xffffff,2.5);light.position.set(-3,5,6);scene.add(light);const fill=new THREE.DirectionalLight(0xd8baff,1.2);fill.position.set(3,0,-4);scene.add(fill);
+const fur=new THREE.MeshStandardMaterial({color:0xf3eaff,roughness:1,metalness:0,flatShading:false});const pink=new THREE.MeshStandardMaterial({color:0xffa9d1,roughness:1});const dark=new THREE.MeshStandardMaterial({color:0x1c1027,roughness:.2});const shine=new THREE.MeshBasicMaterial({color:0xffffff});
+// Single continuous silhouette: no separate head cap, no neck seam.
+// A smoothed radial profile builds a soft dome and gently widening body.
+// Profile from bottom to top: one uninterrupted rounded silhouette.
+// Smooth dome, plush sides, gently flared hem. No abrupt cap or head seam.
+// Continuous rounded body: smooth cubic radius interpolation without seams.
+// A single closed lathed mesh replaces the layered-looking old silhouette.
+const profile=[[-1.18,0],[-1.17,.43],[-1.12,.75],[-1.03,.84],[-.83,.84],[-.55,.80],[-.25,.77],[.08,.79],[.38,.82],[.65,.79],[.89,.66],[1.08,.44],[1.19,.20],[1.22,0]];
+function radiusAt(y){
+  if(y<=profile[0][0]||y>=profile[profile.length-1][0])return 0;
+  let i=0;while(i<profile.length-2 && profile[i+1][0]<y)i++;
+  const [y0,r0]=profile[i],[y1,r1]=profile[i+1];
+  const m0=i===0?0:(profile[i+1][1]-profile[i-1][1])/(profile[i+1][0]-profile[i-1][0]);
+  const m1=i+2>=profile.length?0:(profile[i+2][1]-profile[i][1])/(profile[i+2][0]-profile[i][0]);
+  const t=(y-y0)/(y1-y0),d=y1-y0;
+  return Math.max(0,(2*t*t*t-3*t*t+1)*r0+(t*t*t-2*t*t+t)*d*m0+(-2*t*t*t+3*t*t)*r1+(t*t*t-t*t)*d*m1);
+}
+const vertsBody=[],idxBody=[],rings=120,sides=96;
+for(let j=0;j<=rings;j++){
+  const y=-1.18+j/rings*2.40, r=radiusAt(y);
+  for(let k=0;k<=sides;k++){
+    const a=k/sides*Math.PI*2;
+    const hem=Math.max(0,Math.min(1,(-.90-y)/.28));
+    const wave=.012*Math.cos(a*5)*hem*hem;
+    vertsBody.push(r*Math.cos(a),y+wave,r*Math.sin(a));
+    if(j<rings&&k<sides){const q=j*(sides+1)+k;idxBody.push(q,q+sides+1,q+1,q+1,q+sides+1,q+sides+2)}
+  }
+}
+const bodyGeo=new THREE.BufferGeometry();bodyGeo.setAttribute('position',new THREE.Float32BufferAttribute(vertsBody,3));bodyGeo.setIndex(idxBody);bodyGeo.computeVertexNormals();
+const shape=new THREE.Mesh(bodyGeo,fur);shape.material.side=THREE.DoubleSide;bodyGroup.add(shape);
+const sphere=(parent,mat,x,y,z,sx,sy,sz)=>{let m=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m};
+const leftArm=new THREE.Group(),rightArm=new THREE.Group();leftArm.position.set(-.74,-.32,.025);rightArm.position.set(.74,-.32,.025);bodyGroup.add(leftArm,rightArm);sphere(leftArm,fur,-.035,-.025,.015,.115,.135,.105).rotation.z=-.35;sphere(rightArm,fur,.035,-.025,.015,.115,.135,.105).rotation.z=.35;
+// Facial features follow the curved surface rather than floating far in front.
+const eyes=[],eyeShines=[];
+for(const x of [-.30,.30]){
+ const faceZ=Math.sqrt(Math.max(.01,radiusAt(.36)**2-x*x));
+ const eye=sphere(bodyGroup,dark,x,.36,faceZ+.018,.115,.147,.034);eyes.push(eye);
+ eyeShines.push(sphere(bodyGroup,shine,x-.035,.425,faceZ+.051,.032,.042,.012));
+ const cx=x*1.20, cheekZ=Math.sqrt(Math.max(.01,radiusAt(.11)**2-cx*cx));
+ sphere(bodyGroup,pink,cx,.11,cheekZ+.012,.155,.070,.027);
+}
+const smile=new THREE.Group();bodyGroup.add(smile);
+const pts=[];for(let i=0;i<=24;i++){const a=Math.PI*.15+Math.PI*.7*i/24;const x=.145*Math.cos(a),y=.18-.073*Math.sin(a),z=Math.sqrt(Math.max(.01,radiusAt(y)**2-x*x))+.016;pts.push(new THREE.Vector3(x,y,z))}
+const curve=new THREE.CatmullRomCurve3(pts);smile.add(new THREE.Mesh(new THREE.TubeGeometry(curve,24,.014,6,false),dark));
+// Sparse short fur, placed near the actual radial surface.
+let seed=17317;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};const tuftMat=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.28});const verts=[];
+for(let i=0;i<9000;i++){const y=-1.08+rand()*2.22,r=radiusAt(y),a=rand()*Math.PI*2,dr=.008+rand()*.023;verts.push(r*Math.cos(a),y,r*Math.sin(a),(r+dr)*Math.cos(a),y+(rand()-.5)*.028,(r+dr)*Math.sin(a))}
+const tuftGeo=new THREE.BufferGeometry();tuftGeo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));bodyGroup.add(new THREE.LineSegments(tuftGeo,tuftMat));
+let mode='idle',until=0,drag=false,lastX=0,rotation=0;stage.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;stage.setPointerCapture(e.pointerId)});stage.addEventListener('pointermove',e=>{if(drag){rotation+=(e.clientX-lastX)*.009;lastX=e.clientX}});stage.addEventListener('pointerup',()=>drag=false);document.getElementById('reset').onclick=()=>rotation=0;document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{mode=b.dataset.act;until=performance.now()+2600;status.textContent={wave:'手を振っているよ 👋',happy:'うれしい！ ✨',sleep:'おやすみ… 💤',talk:'おしゃべり中 💬',look:'キョロキョロ 👀'}[mode]});function resize(){let w=stage.clientWidth,h=stage.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}addEventListener('resize',resize);resize();status.textContent='Museはここにいるよ ✨';let t=0;function animate(now){requestAnimationFrame(animate);t=now*.001;if(now>until){mode='idle';status.textContent='Museはここにいるよ ✨'}root.position.y=Math.sin(t*1.7)*.085+(mode==='happy'?Math.abs(Math.sin(t*9))*.23:0);bodyGroup.rotation.z=mode==='happy'?Math.sin(t*10)*.12:mode==='sleep'?Math.sin(t)*.12:Math.sin(t*1.3)*.025;root.rotation.y=rotation+(mode==='look'?Math.sin(t*4)*.24:0);leftArm.rotation.z=mode==='wave'?Math.sin(t*10)*.65:0;rightArm.rotation.z=mode==='wave'?Math.sin(t*10+1)*.65:0;let blink=Math.sin(t*1.23)> .985?.09:1;eyes.forEach((e,i)=>{e.scale.y=.147*(mode==='sleep'?.08:blink);eyeShines[i].visible=mode!=='sleep'&&blink>.5});smile.scale.y=mode==='talk'?1+Math.sin(t*14)*.4:1;renderer.render(scene,camera)}requestAnimationFrame(animate);
+}catch(err){document.getElementById('fallback').style.display='flex';status.textContent='3Dの読み込みに失敗しました。通信環境を確認してね。';console.error(err)}
+document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();const input=document.getElementById('message');const v=input.value.trim();if(!v)return;const p=document.createElement('p');p.className='bubble';p.textContent=v;document.getElementById('chat').append(p);const r=document.createElement('p');r.className='bubble';r.textContent='話しかけてくれてありがとう！💜 まだデモ会話だから、AI接続はこれからだよ。';document.getElementById('chat').append(r);input.value='';window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})});
+</script></body></html>
